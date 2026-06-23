@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circuito Luz de Minas</title>
+  <style>
+    :root { --laranja: #EE5C07; --azul: #00478F; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #EE5C07 0%, #c54a02 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      padding: 20px; color: #1F2937;
+    }
+    .card {
+      background: #fff; width: 100%; max-width: 380px; border-radius: 18px;
+      padding: 32px 28px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.2);
+    }
+    .marca { color: var(--laranja); font-weight: 700; letter-spacing: 1px; font-size: 13px; text-transform: uppercase; margin-bottom: 16px; }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    p { color: #6B7280; font-size: 14px; line-height: 1.5; margin: 0 0 20px; }
+    .btn { display: inline-block; width: 100%; padding: 14px; font-size: 16px; font-weight: 600; color: #fff; background: var(--azul); border: none; border-radius: 10px; cursor: pointer; text-decoration: none; }
+    .spinner { width: 28px; height: 28px; border: 3px solid #E5E7EB; border-top-color: var(--laranja); border-radius: 50%; margin: 0 auto 16px; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="marca">Rota Luz de Minas</div>
+    <div class="spinner"></div>
+    <h1>Abrindo no app…</h1>
+    <p>Se você já tem o app instalado, ele vai abrir automaticamente. Caso contrário, baixe na Play Store.</p>
+    <a id="loja" class="btn" href="#">Baixar na Play Store</a>
+  </div>
+  <script>
+    // Package do app (com.hdl.rotas). A URL da Play Store é derivada dele.
+    var PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.hdl.rotas";
+    var params = new URLSearchParams(location.search);
+    var id = params.get("id");
+    var appLink = id ? ("hdlrotas://marco/" + id) : "hdlrotas://";
+    document.getElementById("loja").href = PLAY_STORE_URL;
+
+    // Tenta abrir o app. Se em ~1.6s a página ainda estiver visível (app não
+    // instalado / deep link não capturado), redireciona para a Play Store.
+    var fallback = setTimeout(function () { window.location.href = PLAY_STORE_URL; }, 1600);
+    function cancela() { clearTimeout(fallback); }
+    window.addEventListener("blur", cancela);
+    window.addEventListener("pagehide", cancela);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) cancela(); });
+
+    window.location.href = appLink;
+  </script>
+</body>
+</html>
