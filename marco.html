@@ -30,20 +30,37 @@
     <div class="marca">Rota Luz de Minas</div>
     <div class="spinner"></div>
     <h1>Abrindo no app…</h1>
-    <p>Se você já tem o app instalado, ele vai abrir automaticamente. Caso contrário, baixe na Play Store.</p>
+    <p id="texto">Se você já tem o app instalado, ele vai abrir automaticamente. Caso contrário, baixe na Play Store.</p>
     <a id="loja" class="btn" href="#">Baixar na Play Store</a>
   </div>
   <script>
     // Package do app (com.hdl.rotas). A URL da Play Store é derivada dele.
     var PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.hdl.rotas";
+    // ID Apple do app no App Store Connect ("Rotas: Luz de Minas").
+    var APP_STORE_URL = "https://apps.apple.com/br/app/id6820334771";
+
+    // iPhone/iPod/iPad → App Store. O iPadOS se identifica como "Macintosh",
+    // então também conta Mac com tela de toque. Todo o resto (Android,
+    // computador) continua indo para a Play Store, como antes.
+    var ua = navigator.userAgent || "";
+    var ehIos = /iPhone|iPad|iPod/.test(ua) ||
+      (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var LOJA_URL = ehIos ? APP_STORE_URL : PLAY_STORE_URL;
+
+    if (ehIos) {
+      document.getElementById("texto").textContent =
+        "Se você já tem o app instalado, ele vai abrir automaticamente. Caso contrário, baixe na App Store.";
+      document.getElementById("loja").textContent = "Baixar na App Store";
+    }
+
     var params = new URLSearchParams(location.search);
     var id = params.get("id");
     var appLink = id ? ("hdlrotas://marco/" + id) : "hdlrotas://";
-    document.getElementById("loja").href = PLAY_STORE_URL;
+    document.getElementById("loja").href = LOJA_URL;
 
     // Tenta abrir o app. Se em ~1.6s a página ainda estiver visível (app não
-    // instalado / deep link não capturado), redireciona para a Play Store.
-    var fallback = setTimeout(function () { window.location.href = PLAY_STORE_URL; }, 1600);
+    // instalado / deep link não capturado), redireciona para a loja.
+    var fallback = setTimeout(function () { window.location.href = LOJA_URL; }, 1600);
     function cancela() { clearTimeout(fallback); }
     window.addEventListener("blur", cancela);
     window.addEventListener("pagehide", cancela);
